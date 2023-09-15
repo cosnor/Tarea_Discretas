@@ -17,6 +17,7 @@ class App(customtkinter.CTk):
         self.nodos = 0
         self.title("image_example.py")
         self.geometry("1280x760")
+        self.dibujar = False
 
         # set grid layout 1x2
         self.grid_rowconfigure(0, weight=1)
@@ -145,6 +146,7 @@ class App(customtkinter.CTk):
         print("")
     
     def secuencia_event(self):
+        self.dibujar = False
         self.secuencia = []
         simple = True
         self.home_label4 = customtkinter.CTkLabel(self.home_frame, text="", font=customtkinter.CTkFont(size=12, weight="bold", family="Arial"))
@@ -157,6 +159,7 @@ class App(customtkinter.CTk):
                 self.secuencia.append(int(combo.get()))
         print(self.secuencia)
         if simple:
+            self.dibujar = True
             self.text_box.delete("0.0", "end")
             print("Es simple")
             self.text_box.place(x=300, y=350)
@@ -166,6 +169,7 @@ class App(customtkinter.CTk):
             for i in grafo.mostrar:
                 self.text_box.insert("end", str(i) + "\n")
         else:
+            self.dibujar = False
             self.home_label4 = customtkinter.CTkLabel(self.home_frame, text="El grafo no es simple", font=customtkinter.CTkFont(size=12, weight="bold", family="Arial"))
             self.home_label4.place(x=30, y=720)
     
@@ -178,24 +182,34 @@ class App(customtkinter.CTk):
         self.select_frame_by_name("frame_2")
         
     def plot(self): 
+        # if self.dibujar:
+        #     fig, ax = plt.subplots()
+        #     ax.axis('off')  # Desactivar ejes coordenados
+        #     canvas = FigureCanvasTkAgg(fig, master=self.second_frame)
+        #     canvas.get_tk_widget().pack(side=tk.TOP, padx= 300, pady=200, expand=1)
+        #     ax.clear()
+        #     grados = self.secuencia
+        #     grafo = nx.random_degree_sequence_graph(grados)
+        #     nx.draw(grafo, with_labels=True, font_weight='bold')
+        #     canvas.draw()
+    # Crear una nueva figura y eje en cada llamada
         fig, ax = plt.subplots()
         ax.axis('off')  # Desactivar ejes coordenados
         canvas = FigureCanvasTkAgg(fig, master=self.second_frame)
-        canvas.get_tk_widget().pack(side="bottom")        
-        ax.clear()
+        canvas.get_tk_widget().pack(side=tk.TOP, padx=300, pady=200, expand=1)
+        
         grados = self.secuencia
-        grafo = nx.random_degree_sequence_graph(grados)
-        nx.draw(grafo, with_labels=True, font_weight='bold')
+        try:
+            grafo = nx.random_degree_sequence_graph(grados)
+            nx.draw(grafo, with_labels=True, font_weight='bold')
+        except Exception as e:
+            ax.clear()
+            ax.text(0.5, 0.5, "No existe el grafo", ha='center', va='center', fontsize=12)
+        
         canvas.draw()
     
         
                 
-    
-
-
-
-
-
 
 if __name__ == "__main__":
     app = App()
